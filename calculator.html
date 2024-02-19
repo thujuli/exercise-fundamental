@@ -1,0 +1,107 @@
+<script>
+  /**
+   * Algoritma
+   * 0. Mulai loop sampi kondisi tertentu terpenuhi
+   * 1 Tampilkan daftar operasi yang tersedia (+, -, *, /)
+   * 2.1. Jika user memilih operasi yang tersedia lanjut ke 3
+   * 2.2 - Jika tidak sesuai pilihan maka tampilkan permberitahuan "Menu tidak ada"
+   *     - Berikan opsi kepada user apakah mau melanjutkan atau tidak
+   *     -- Jika ok kembali ke step 1 selain itu hentikan loop
+   * 3. Lakukan operasi sesuai pilihan user, dengan input 2 kali, bil1 dan bil2 tampilkan hasilnya
+   *    dan setelah itu:
+   *     - Berikan opsi kepada user apakah mau melanjutkan atau tidak
+   *     -- Jika ok kembali ke step 1 selain itu hentikan loop
+   * */
+  const options = "A. Penjumlahan\nB. Pengurangan\nC. Perkalian\nD. Pembagian";
+  const promptNumber1 = "Masukkan angka pertama: ";
+  const promptNumber2 = "Masukkan angka kedua: ";
+  const invalidNumberMessage =
+    "Terjadi kesalahan, mohon check input yang anda masukkan!";
+  const invalidOptionsMessage = "Menu tidak tersedia";
+  const isRepeatMessage = "Mau lanjut lagi?";
+
+  let isRepeat = true;
+  while (isRepeat) {
+    const startOptions = prompt(options).toLowerCase().trim();
+
+    if (startOptions === "a") {
+      const number1 = prompt(promptNumber1);
+      const number2 = prompt(promptNumber2);
+
+      if (
+        number1.trim().length === 0 ||
+        isNaN(number1) ||
+        number2.trim().length === 0 ||
+        isNaN(number2)
+      ) {
+        alert(invalidNumberMessage);
+      } else {
+        alert(
+          `${number1} + ${number2} = ${
+            parseFloat(number1) + parseFloat(number2)
+          }`
+        );
+      }
+    } else if (startOptions === "b") {
+      const number1 = prompt(promptNumber1);
+      const number2 = prompt(promptNumber2);
+
+      if (
+        number1.trim().length === 0 ||
+        isNaN(number1) ||
+        number2.trim().length === 0 ||
+        isNaN(number2)
+      ) {
+        alert(invalidNumberMessage);
+      } else {
+        alert(
+          `${number1} - ${number2} = ${
+            parseFloat(number1) - parseFloat(number2)
+          }`
+        );
+      }
+    } else if (startOptions === "c") {
+      const number1 = prompt(promptNumber1);
+      const number2 = prompt(promptNumber2);
+
+      if (
+        number1.trim().length === 0 ||
+        isNaN(number1) ||
+        number2.trim().length === 0 ||
+        isNaN(number2)
+      ) {
+        alert(invalidNumberMessage);
+      } else {
+        alert(
+          `${number1} * ${number2} = ${
+            parseFloat(number1) * parseFloat(number2)
+          }`
+        );
+      }
+    } else if (startOptions === "d") {
+      const number1 = prompt(promptNumber1);
+      const number2 = prompt(promptNumber2);
+
+      if (
+        number1.trim().length === 0 ||
+        isNaN(number1) ||
+        number2.trim().length === 0 ||
+        isNaN(number2)
+      ) {
+        alert(invalidNumberMessage);
+      } else {
+        alert(
+          `${number1} / ${number2} = ${
+            parseFloat(number1) / parseFloat(number2)
+          }`
+        );
+      }
+    } else {
+      alert(invalidOptionsMessage);
+    }
+
+    if (!confirm(isRepeatMessage)) {
+      isRepeat = false;
+    }
+  }
+</script>
