@@ -1,0 +1,118 @@
+<script>
+  // Popup in javascript: Alert, Confirm and Prompt
+  // Alert => only show button 'ok'
+  // Confirm => show button 'ok' and 'cancel'
+  // Prompt => show 'input for user', 'ok' and 'cancel'
+  /**
+   * Algoritman Suit Game:
+   * 1. Tampilkan 'alert' dengan pesan 'Welcome to SUIT GAME'
+   * 2. Tampilkan 'prompt' dengan pesan:
+   *    Select one:
+   *    1. GUNTING
+   *    2. BATU
+   *    3. KERTAS
+   * 3. Tampilkan 'alert' dengan pesan pilihan user vs computer
+   *    example:
+   *    PLAYER 'KERTAS' vs KOMPUTER 'BATU'
+   *    PLAYER 'LOSE'
+   * 4. Tampilkan 'alert' result keseluruhan
+   *    example:
+   *    WIN: 0
+   *    LOSE: 1
+   *    DRAW: 0
+   * 5. Tampilkan 'confirm' untuk memberitahukan player lanjut atau stop
+   *    message:
+   *    Try again?
+   *    - Jika user memilih 'ok' balik lagi ke step 1
+   *    - Jika user memilih 'cancel' tampilkan step 4 beserta tambahan final score
+   *      example:
+   *      WIN: 2
+   *      LOSE: 5
+   *      DRAW: 3
+   *      final score: 25 (WIN * 2)
+   * */
+  const suit = {
+    GUNTING: "GUNTING",
+    BATU: "BATU",
+    KERTAS: "KERTAS",
+  };
+  let isRetry = true;
+  const statistic = {
+    win: 0,
+    lose: 0,
+    draw: 0,
+  };
+
+  const showResult = (statistic, showTotal = false) => {
+    const fixedMsg = `WIN: ${statistic.win}\nLOSE: ${statistic.lose}\nDRAW: ${statistic.draw}\n`;
+    const optMsg = `Final Score: ${statistic.win * 25}`;
+
+    showTotal ? alert(fixedMsg + optMsg) : alert(fixedMsg);
+  };
+
+  const randomSelected = () => {
+    const choices = [suit.GUNTING, suit.BATU, suit.KERTAS];
+    const index = Math.floor(Math.random() * choices.length);
+    return choices[index];
+  };
+
+  const numToSuit = (menu) => {
+    let result = "";
+
+    if (menu === "1") {
+      result = suit.GUNTING;
+    } else if (menu === "2") {
+      result = suit.BATU;
+    } else {
+      result = suit.KERTAS;
+    }
+    return result;
+  };
+
+  const startSuit = (player, computer) => {
+    let result = "";
+
+    if (
+      (player === suit.GUNTING && computer == suit.BATU) ||
+      (player === suit.BATU && computer === suit.KERTAS) ||
+      (player === suit.KERTAS && computer === suit.GUNTING)
+    ) {
+      statistic.lose++;
+      result = "LOSE";
+    } else if (
+      (player === suit.GUNTING && computer === suit.KERTAS) ||
+      (player === suit.BATU && computer === suit.GUNTING) ||
+      (player === suit.KERTAS && computer === suit.BATU)
+    ) {
+      statistic.win++;
+      result = "WIN";
+    } else {
+      statistic.draw++;
+      result = "DRAW";
+    }
+    return result;
+  };
+
+  while (isRetry) {
+    alert("Welcome to SUIT GAME");
+
+    const menuSelected = prompt("Select One:\n1. GUNTING\n2. BATU\n3. KERTAS");
+    if (["1", "2", "3"].includes(menuSelected)) {
+      let playerSelected = numToSuit(menuSelected);
+      const computerSelected = randomSelected();
+      const result = startSuit(playerSelected, computerSelected);
+
+      alert(
+        `PLAYER '${playerSelected}' vs KOMPUTER '${computerSelected}'\nPLAYER '${result}'`
+      );
+      showResult(statistic);
+    } else {
+      alert("Invalid input, Mohon masukkan pilihan yang tersedia!");
+    }
+
+    if (!confirm("Try again?")) {
+      showResult(statistic, true);
+      isRetry = false;
+    }
+  }
+</script>
