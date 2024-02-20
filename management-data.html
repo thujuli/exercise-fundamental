@@ -1,0 +1,154 @@
+<script>
+  class Product {
+    constructor(name, stock, price) {
+      this.name = name;
+      this.stock = stock;
+      this.price = price;
+    }
+  }
+
+  class ProductManagement {
+    #products = [];
+
+    addProduct(product) {
+      this.#products.push(product);
+    }
+
+    showProducts() {
+      let display = "";
+      this.#products.forEach((item, idx) => {
+        const priceIDR = item.price.toLocaleString("id-ID", {
+          style: "currency",
+          currency: "IDR",
+        });
+        display += `${idx + 1}. ${item.name}, stoknya: ${
+          item.stock
+        }, ${priceIDR}\n`;
+      });
+      return display;
+    }
+
+    deleteProduct(index) {
+      this.#products.splice(index, 1);
+    }
+
+    updateProduct(index, property, value) {
+      this.#products[index][property] = value;
+    }
+  }
+
+  /**
+   * Algoritma:
+   * 1. Menampilkan menu (prompt) dengan message
+   *    A. Show all products
+   *    B. Add new product
+   *    C. Delete a product
+   *    D. Update a product
+   *    E. Exit
+   * 1.1. Ketika user memilih selain menu yang tersedia (invalid input) => user akan menampilkan (alert)
+   *    'Menu yang anda pilih tidak tersedia!'
+   *    kemudian balik lagi menampilkan menu awal (step 1)
+   * 1.2. Ketika user memilih menu yang tersedia user akan masuk ke menu pilihannya
+   * 2.A. Show all product
+   *      User akan melihat data yang tersedia (alert).
+   * 2.B. Add new product
+   *      User akan disuruh untuk memasukkan name, stock dan price dari product. Kemudian akan menampilkan product keseluruhan
+   * 2.C. Delete a product
+   *      User akan disuruh untuk memasukkan index (nomor) product yang akan dihapus. Setelah itu akan menampilkan pesan 'Product berhasil dihapus', dan kemudian menampilkan list product
+   * 2.D. Update a product
+   *      User akan disuruh untuk memasukkan index (nomor) product yang akan dihapus. Next, user disuruh untuk memilih menu dari nama property yang akan diperbaharui (prompt). Selanjutnya akan memperbaharui value dari property yang dipilih. Dan kemudian akan menampilkan product keseluruhan.
+   * 2.E. Exit
+   *    Langsung keluar dari program.
+   * */
+
+  const mainMenuMsg =
+    "A. Show all products\nB. Add new product\nC. Delete a product\nD. Update a product\nE. Exit";
+  const mainMenus = ["a", "b", "c", "d", "e"];
+  const updateMenuMsg =
+    "A. Update 'Name'\nB. Update 'Stock'\nC. Update 'Price'\n";
+  const updateMenus = ["a", "b", "c"];
+
+  const initialData = [
+    new Product("Apel", 15, 5000),
+    new Product("Jeruk", 20, 4500),
+    new Product("Kelapa", 20, 7000),
+  ];
+
+  const productManagement = new ProductManagement();
+  for (const value of initialData) {
+    productManagement.addProduct(value);
+  }
+
+  const updatedProduct = (menus, choice, index) => {
+    if (menus.includes(choice)) {
+      if (choice === "a") {
+        const inputName = prompt("Masukkan nilai baru untuk property 'Name': ");
+        productManagement.updateProduct(index, "name", inputName);
+      } else if (choice === "b") {
+        const inputStock = Number(
+          prompt("Masukkan nilai baru untuk property 'Stock': ")
+        );
+        productManagement.updateProduct(index, "stock", inputStock);
+      } else {
+        const inputPrice = parseFloat(
+          prompt("Masukkan nilai baru untuk property 'Price': ")
+        );
+        productManagement.updateProduct(index, "price", inputPrice);
+      }
+      alert(
+        `Product berhasil diperbaharui\n${productManagement.showProducts()}`
+      );
+    }
+  };
+
+  const startManageProduct = (menus, choice) => {
+    if (menus.includes(choice)) {
+      if (choice === "a") {
+        alert(`Daftar barang saat ini:\n${productManagement.showProducts()}`);
+      } else if (choice === "b") {
+        const inputName = prompt("Masukkan Nama Product");
+        const inputStock = Number(prompt("Masukkan Stock Product"));
+        const inputPrice = parseFloat(prompt("Masukkan Price Product"));
+        const newProduct = new Product(inputName, inputStock, inputPrice);
+
+        productManagement.addProduct(newProduct);
+        alert(
+          `Product Berhasil ditambahkan\n${productManagement.showProducts()}`
+        );
+      } else if (choice === "c") {
+        const inputIndex = Number(
+          prompt("Masukkan Index Product yang akan dihapus!")
+        );
+
+        productManagement.deleteProduct(inputIndex - 1);
+        alert("Product berhasil dihapus");
+        alert(productManagement.showProducts());
+      } else if (choice === "d") {
+        const inputIndex = Number(
+          prompt(
+            `${productManagement.showProducts()}\nMasukkan Index Product yang akan diperbaharui!`
+          )
+        );
+        const updateMenuSelected = prompt(updateMenuMsg).toLowerCase();
+        updatedProduct(updateMenus, updateMenuSelected, inputIndex - 1);
+      } else {
+        return false;
+      }
+    } else {
+      alert("Menu yang anda pilih tidak tersedia!");
+    }
+  };
+
+  while (true) {
+    const userSelected = prompt(mainMenuMsg).toLowerCase();
+    const start = startManageProduct(mainMenus, userSelected);
+
+    if (start === false) {
+      break;
+    } else {
+      if (!confirm("Lanjut untuk melakukan operasi?")) {
+        break;
+      }
+    }
+  }
+</script>
