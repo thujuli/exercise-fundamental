@@ -1,0 +1,444 @@
+<script>
+  // Create a class for User, and Admin with same property. It's username
+  class User {
+    constructor(username, isAdmin = false) {
+      this.username = username;
+      this.isAdmin = isAdmin;
+    }
+  }
+
+  class Account {
+    constructor() {
+      this.users = [];
+    }
+
+    addUser(user) {
+      this.users.push(user);
+    }
+
+    checkUser(username) {
+      return this.users.filter((val) => val.username === username)[0];
+    }
+
+    showAllUsers() {
+      let display = "";
+      const users = this.users.filter((val) => !val.isAdmin);
+      users.forEach((val, idx) => {
+        if (!val.isAdmin) {
+          display += `${idx + 1}. ${val.username} role = user\n`;
+        }
+      });
+      return display;
+    }
+  }
+
+  // Create a class for Product
+  class Product {
+    constructor(name, price = 0, qty = 0) {
+      this.name = name;
+      this.price = price;
+      this.qty = qty;
+    }
+  }
+
+  class Store {
+    constructor() {
+      this.products = [];
+    }
+
+    addProduct(product) {
+      this.products.push(product);
+    }
+
+    deleteProduct(index) {
+      this.products.splice(index, 1);
+    }
+
+    updateProduct(index, property, value) {
+      this.products[index][property] = value;
+    }
+
+    selectProduct(index) {
+      return this.products[index];
+    }
+
+    showAllProducts() {
+      let display = "";
+      this.products.forEach((val, idx) => {
+        const { name, price, qty } = val;
+        const priceIDR = price.toLocaleString("id-ID", {
+          style: "currency",
+          currency: "IDR",
+        });
+        display += `${idx + 1}. ${name} = ${priceIDR} stock = ${qty}\n`;
+      });
+      return display;
+    }
+  }
+
+  class Transaction {
+    constructor(products) {
+      this.products = products;
+      this.cart = [];
+    }
+
+    add(index, qty) {
+      // 1. Dapatkan nilai selisih nilai products.qty - qty
+      // 2. Update products[index].qty dengan nilai diatas
+      // 3. Buat newProduct mengunakan product[index]
+      // 4. Update newProduct.qty = qty
+      // 5. Save newProduct ke this.cart
+      const qtyDiff = this.products[index].qty - qty;
+      this.products[index].qty = qtyDiff;
+      const newProduct = { ...this.products[index] };
+      newProduct.qty = qty;
+      this.cart.push(newProduct);
+    }
+
+    showAllProducts() {
+      console.log(this.products);
+      let display = "";
+      this.products.forEach((val, idx) => {
+        const { name, price } = val;
+        const priceIDR = price.toLocaleString("id-ID", {
+          style: "currency",
+          currency: "IDR",
+        });
+        display += `${idx + 1}. ${name} = ${priceIDR}\n`;
+      });
+      return display;
+    }
+
+    selectProduct(index) {
+      return this.products[index];
+    }
+
+    showCart() {
+      let display = "Total belanja anda adalah:\n";
+      let total = 0;
+      this.cart.forEach((val, idx) => {
+        const { name, price, qty } = val;
+        const subtotal = price * qty;
+        const priceIDR = price.toLocaleString("id-ID", {
+          style: "currency",
+          currency: "IDR",
+        });
+        const subtotalIDR = subtotal.toLocaleString("id-ID", {
+          style: "currency",
+          currency: "IDR",
+        });
+        display += `${
+          idx + 1
+        }. ${name} ${priceIDR} x ${qty} = ${subtotalIDR}\n`;
+        total += subtotal;
+      });
+      const totalIDR = total.toLocaleString("id-ID", {
+        style: "currency",
+        currency: "IDR",
+      });
+
+      return display + `\nTotal pembayaran: ${totalIDR}`;
+    }
+
+    checkout(money) {
+      let total = 0;
+      for (const val of this.cart) {
+        total += val.price * val.qty;
+      }
+
+      if (money < total) {
+        return false;
+      }
+      this.cart = [];
+      return money - total;
+    }
+  }
+
+  // Main Program
+  const menu = (select, menus, errorMsg) => {
+    if (!select) {
+      return false;
+    } else if (!menus.includes(select)) {
+      alert(errorMsg);
+    } else {
+      return select;
+    }
+  };
+
+  const confirmContinue = (store, confirmMsg, successMsg) => {
+    alert(`Persedian product di Toko.ku \n${store.showAllProducts()}`);
+
+    if (!confirm(confirmMsg)) {
+      alert(successMsg);
+      return false;
+    }
+    return true;
+  };
+
+  const mainMenuMsg =
+    "Selamat datang di Toko.ku\n1. Login\n2. Register\n3. Exit";
+  const mainMenus = ["1", "2", "3"];
+  const adminMenus = ["1", "2", "3", "4", "5", "6", "7"];
+  const adminMenuMsg =
+    "Silahkan pilih menu:\n1. Add a product\n2. Remove a product\n3. Edit a product\n4. Show all users\n5. User transaction\n6. Change role\n7. Logout";
+  const errorMenuMsg = "Menu tidak tersedia!";
+
+  const dbProduct = [
+    new Product("Apple", 5000, 10),
+    new Product("Banana", 2000, 5),
+    new Product("Strawberry", 6500, 20),
+  ];
+
+  // Add a product
+  const store = new Store();
+  for (const value of dbProduct) {
+    store.addProduct(value);
+  }
+
+  // Create a User
+  const dbUser = [new User("Admin", true), new User("Budi"), new User("Ucup")];
+  const account = new Account();
+  for (const val of dbUser) {
+    account.addUser(val);
+  }
+
+  while (true) {
+    let isLogout = false;
+    const mainMenuSelected = prompt(mainMenuMsg);
+    const mainMenu = menu(mainMenuSelected, mainMenus, errorMenuMsg);
+
+    if (mainMenu === false) {
+      break;
+    } else if (mainMenu === undefined) {
+      continue;
+    } else {
+      if (mainMenu === "1") {
+        const usernameInput = prompt("Silahkan login: ");
+        const user = account.checkUser(usernameInput);
+        if (!user) {
+          alert("User tidak ditemukan!");
+          continue;
+        }
+
+        if (user.isAdmin) {
+          alert(`Selamat datang ${user.username}`);
+          while (true) {
+            const adminMenuSelected = prompt(adminMenuMsg);
+            const adminMenu = menu(adminMenuSelected, adminMenus, errorMenuMsg);
+
+            if (adminMenu === false) {
+              break;
+            } else if (adminMenu === undefined) {
+              continue;
+            } else {
+              if (adminMenu === "1") {
+                while (true) {
+                  const productName = prompt("Masukkan nama product:");
+                  if (productName.length === 0) {
+                    alert("Nama product tidak boleh kosong!");
+                    continue;
+                  } else if (!isNaN(productName)) {
+                    alert("Nama product tidak boleh diawali dengan angka!");
+                    continue;
+                  }
+
+                  const productPrice = prompt(`Masukkan harga ${productName}:`);
+                  const productStock = prompt(`Masukkan stock ${productName}:`);
+                  if (isNaN(productPrice) || isNaN(productStock)) {
+                    alert("Mohon masukkan angka untuk harga dan stock!");
+                    continue;
+                  }
+
+                  const newProduct = new Product(
+                    productName,
+                    Number(productPrice),
+                    Number(productStock)
+                  );
+                  store.addProduct(newProduct);
+                  if (
+                    !confirmContinue(
+                      store,
+                      "Tambah product lagi?",
+                      "Penambahan product selesai"
+                    )
+                  )
+                    break;
+                }
+              } else if (adminMenu === "2") {
+                while (true) {
+                  const productIndex = prompt(
+                    `Pilih product yang dihapus\n${store.showAllProducts()}`
+                  );
+
+                  if (!productIndex) {
+                    break;
+                  }
+                  const productSelected = store.selectProduct(
+                    Number(productIndex) - 1
+                  );
+
+                  if (productSelected === undefined) {
+                    alert("Product tidak ditemukan");
+                    continue;
+                  }
+
+                  store.deleteProduct(Number(productIndex) - 1);
+                  if (
+                    !confirmContinue(
+                      store,
+                      "Hapus product lagi?",
+                      "Penghapusan product selesai"
+                    )
+                  )
+                    break;
+                }
+              } else if (adminMenu === "3") {
+                while (true) {
+                  let property = "";
+                  let propertyIdn = "";
+                  const productIndex = prompt(
+                    `Pilih product yang akan diedit:\n${store.showAllProducts()}`
+                  );
+
+                  if (!productIndex) {
+                    break;
+                  }
+                  const productSelected = store.selectProduct(
+                    Number(productIndex) - 1
+                  );
+
+                  if (productSelected === undefined) {
+                    alert("Product tidak ditemukan");
+                    continue;
+                  }
+
+                  const menuEdit = prompt(
+                    "1. Edit nama\n2. Edit harga\n3. Edit stock"
+                  );
+
+                  if (!menuEdit) {
+                    continue;
+                  } else if (menuEdit === "1") {
+                    property = "name";
+                    propertyIdn = "nama";
+                  } else if (menuEdit === "2") {
+                    property = "price";
+                    propertyIdn = "harga";
+                  } else if (menuEdit === "3") {
+                    property = "qty";
+                    propertyIdn = "stock";
+                  } else {
+                    alert(errorMenuMsg);
+                    continue;
+                  }
+
+                  let newValue = prompt(
+                    `Masukkan ${propertyIdn} baru dari ${productSelected.name}:`
+                  );
+                  if (menuEdit === "2" || menuEdit === "3") {
+                    newValue = Number(newValue);
+                  }
+
+                  store.updateProduct(
+                    Number(productIndex) - 1,
+                    property,
+                    newValue
+                  );
+                  if (
+                    !confirmContinue(
+                      store,
+                      "Perbaharui product lagi?",
+                      "Pembaharuan product selesai"
+                    )
+                  )
+                    break;
+                }
+              } else if (adminMenu === "4") {
+                alert(account.showAllUsers());
+              } else if (adminMenu === "7") {
+                isLogout = true;
+                break;
+              }
+            }
+          }
+        } else {
+          const transaction = new Transaction(store.products);
+          alert(`Halo ${user.username}, Selamat data di Toko.ku`);
+
+          while (true) {
+            const productIndex = prompt(
+              `Persedian product di Toko.ku \n${transaction.showAllProducts()}`
+            );
+
+            if (!productIndex) {
+              break;
+            }
+
+            const productSelected = transaction.selectProduct(
+              Number(productIndex) - 1
+            );
+            if (productSelected === undefined) {
+              alert("Product tidak ditemukan");
+              continue;
+            }
+
+            const qtyAddToCart = prompt(
+              `Stock ${productSelected.name} = ${productSelected.qty}, Beli ${productSelected.name} berapa?`
+            );
+            if (isNaN(qtyAddToCart)) {
+              alert("Mohon masukkan angka untuk qty product!");
+              continue;
+            }
+            transaction.add(Number(productIndex) - 1, Number(qtyAddToCart));
+
+            if (!confirm("Beli product lain?")) {
+              while (true) {
+                alert(transaction.showCart());
+                const userMoney = prompt("Bayarkan uang anda:");
+                if (isNaN(userMoney)) {
+                  alert("Mohon masukkan angka!");
+                  continue;
+                }
+
+                const change = transaction.checkout(Number(userMoney));
+                if (change === false) {
+                  alert("Maaf uang anda kurang!");
+                  continue;
+                }
+
+                const changeIDR = change.toLocaleString("id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                });
+                alert(
+                  `Terima kasih sudah telah melakukan pembayaran, kembalian anda sebesar ${changeIDR}`
+                );
+                break;
+              }
+
+              if (!confirm("Ingin berbelanja lagi?")) {
+                alert("Terima kasih sudah berbelanja di Toko.ku");
+                break;
+              }
+            }
+          }
+        }
+      } else if (mainMenu === "2") {
+        const userUsername = prompt("Masukkan nama anda:");
+        const newUser = new User(userUsername);
+        account.addUser(newUser);
+        continue;
+      } else {
+        break;
+      }
+    }
+
+    if (isLogout) {
+      continue;
+    }
+
+    if (!confirm("Apakah anda masih ingin lanjut?")) {
+      break;
+    }
+  }
+</script>
